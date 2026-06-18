@@ -14,6 +14,34 @@
   var current = null;
   var ticking = false;
 
+  /* Make each frame open its paper: the title becomes the link to the
+     PDF and its hit area is stretched over the whole card. The source
+     chips stay independently clickable (they sit above the overlay).
+     All sources open in a new tab so the tape stays put. */
+  cells.forEach(function (cell) {
+    var chips = cell.querySelectorAll(".cell__links a");
+    if (!chips.length) return;
+
+    chips.forEach(function (a) { a.target = "_blank"; a.rel = "noopener"; });
+
+    var pdf = null;
+    for (var i = 0; i < chips.length; i++) {
+      if (/^pdf\b/i.test(chips[i].textContent.trim())) { pdf = chips[i]; break; }
+    }
+    if (!pdf) pdf = chips[0];   // e.g. Perceptrons (a book) → publisher page
+
+    var title = cell.querySelector(".cell__title");
+    if (!title) return;
+
+    var open = document.createElement("a");
+    open.className = "cell__open";
+    open.href = pdf.href;
+    open.target = "_blank";
+    open.rel = "noopener";
+    while (title.firstChild) open.appendChild(title.firstChild);
+    title.appendChild(open);
+  });
+
   function update() {
     ticking = false;
 
