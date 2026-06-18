@@ -425,13 +425,6 @@ body {
   letter-spacing: .12em;
   color: var(--head);
 }
-.colophon__set {
-  margin: 1.1rem 0 0;
-  max-width: 34ch;
-  font-family: var(--mono);
-  font-size: .74rem;
-  color: var(--mute);
-}
 
 /* ============================================================
    Scrollbar — a thin track at the foot of the tape
