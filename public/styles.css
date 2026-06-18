@@ -162,9 +162,8 @@ body {
   list-style: none;
 }
 
-/* ---- shared panel bones ---- */
-.panel,
-.cell {
+/* ---- title & end panels ---- */
+.panel {
   flex: 0 0 auto;
   height: 100%;
   scroll-snap-align: center;
@@ -219,13 +218,46 @@ body {
    Paper frames
    ============================================================ */
 .cell {
+  flex: 0 0 auto;
   width: var(--cell-w);
-  gap: 0;
-  overflow-y: auto;                  /* long frames scroll within, if ever needed */
+  height: 100%;
+  scroll-snap-align: center;
+  border-right: 1px dashed var(--perf);
   position: relative;
-  transition: background .2s ease, box-shadow .2s ease;
+  perspective: 1400px;
 }
 .papers > .cell:nth-child(odd) { background: var(--bar); }  /* greenbar band */
+
+/* ---- the flip itself ---- */
+.cell__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform .7s cubic-bezier(.2, .7, .2, 1);
+}
+.cell.is-flipped .cell__inner { transform: rotateY(180deg); }
+
+.cell__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.cell__face--front {
+  justify-content: center;
+  padding: clamp(1.4rem, 3.2vw, 2.4rem) clamp(1.5rem, 4vw, 2.8rem);
+  overflow-y: auto;
+}
+.cell__face--back {
+  transform: rotateY(180deg);
+  background: var(--paper);
+  pointer-events: none;
+}
+.cell.is-flipped .cell__face--front { pointer-events: none; }
+.cell.is-flipped .cell__face--back { pointer-events: auto; }
 
 .cell__num {
   margin: 0 0 auto;
@@ -279,28 +311,100 @@ body {
 .cell__links a:hover { color: var(--head); border-color: var(--head); transform: translateY(-1px); }
 .cell__links a:focus-visible { outline: 2px solid var(--head); outline-offset: 2px; }
 
-/* ---- whole-card link to the paper's PDF ---- */
-.cell__open {
-  color: inherit;
-  text-decoration: none;
-  cursor: pointer;
-}
-.cell__open::after {            /* stretch the hit area over the frame */
-  content: "";
+/* ---- click-to-flip affordance ---- */
+.cell__flip {
   position: absolute;
   inset: 0;
   z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font: inherit;
+  cursor: pointer;
 }
 .cell__links { position: relative; z-index: 2; }   /* chips stay clickable */
 
-.cell:has(.cell__open:hover) { outline: 2px solid var(--head); outline-offset: -2px; }
-.cell:has(.cell__open:hover) .cell__title { text-decoration: underline; text-decoration-color: var(--head); text-underline-offset: 3px; }
-.cell:has(.cell__open:focus-visible) { outline: 2px solid var(--head); outline-offset: -2px; }
-.cell__open:focus-visible { outline: none; }
+.cell:has(.cell__flip:hover),
+.cell:has(.cell__flip:focus-visible) { outline: 2px solid var(--head); outline-offset: -2px; }
+.cell:has(.cell__flip:hover) .cell__title {
+  text-decoration: underline;
+  text-decoration-color: var(--head);
+  text-underline-offset: 3px;
+}
+.cell__flip:focus-visible { outline: none; }
 
 /* ---- the frame currently under the head ---- */
-.cell.is-read { box-shadow: inset 0 4px 0 var(--head); }
+.cell.is-read::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--head);
+  z-index: 5;
+  pointer-events: none;
+}
 .cell.is-read .cell__num { color: var(--head); }
+
+/* ---- back face: status bar + embedded PDF ---- */
+.cell__bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem .8rem;
+  border-bottom: 1px solid var(--perf);
+  background: var(--paper);
+  font-family: var(--mono);
+  font-size: .72rem;
+}
+.cell__bar-label { color: var(--mute); letter-spacing: .1em; }
+.cell__bar-open {
+  margin-left: auto;
+  color: var(--link);
+  text-decoration: none;
+  padding: .25rem .5rem;
+  border: 1px solid var(--perf);
+}
+.cell__bar-open:hover { color: var(--head); border-color: var(--head); }
+.cell__back {
+  border: 0;
+  cursor: pointer;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: .72rem;
+  padding: .3rem .6rem;
+}
+.cell__back:hover { background: var(--head); }
+.cell__bar-open:focus-visible,
+.cell__back:focus-visible { outline: 2px solid var(--head); outline-offset: 2px; }
+
+.cell__pdf {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  background: #F1F1EA;
+}
+
+.cell__book {
+  padding: clamp(1.4rem, 3vw, 2rem);
+  font-size: .95rem;
+  overflow-y: auto;
+}
+.cell__book p { margin: 0 0 1.1rem; }
+.cell__book-links { display: flex; flex-wrap: wrap; gap: .55rem; }
+.cell__book-links a {
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--link);
+  text-decoration: none;
+  padding: .34rem .7rem;
+  border: 1px solid var(--perf);
+}
+.cell__book-links a:hover { color: var(--head); border-color: var(--head); }
 
 /* ============================================================
    End panel (colophon)
@@ -360,5 +464,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tape { scroll-behavior: auto; }
   .js [data-print] { opacity: 1; transform: none; animation: none; }
-  .head__mark, .cell, .cell__num, .cell__links a { transition: none; }
+  .head__mark, .cell__num, .cell__links a { transition: none; }
+  .cell__inner { transition: none; }   /* flip snaps instead of spinning */
 }

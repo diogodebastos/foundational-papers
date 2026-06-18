@@ -7,8 +7,12 @@ line-printer sheet with tractor-feed sprocket gutters and a read/write head that
 tracks the paper nearest the center of the viewport as you scroll, after Turing's
 1936 machine that started the whole lineage.
 
-Static site (HTML/CSS/JS, no build step), served from Cloudflare via Workers
-Static Assets.
+Static front end (HTML/CSS/JS, no build step) served from Cloudflare via a
+Worker. Clicking a frame flips it to reveal the paper's PDF, embedded
+same-origin through a small proxy in the Worker (`/paper/NN.pdf`) so sources
+that block framing or are served over http can still be previewed inline. The
+proxy only serves a fixed allowlist of the ten paper URLs — it is not an open
+proxy.
 
 ## Develop
 
@@ -53,8 +57,10 @@ wrangler pages deploy public --project-name=foundational-papers
 ```
 public/
   index.html   all ten papers as static markup
-  styles.css   "The Tape" — greenbar bands, sprocket gutters, type scale
-  main.js      read/write head tracking (progressive enhancement)
+  styles.css   "The Tape" — greenbar bands, sprocket gutters, flip cards
+  main.js      head tracking + flip-to-PDF (progressive enhancement)
   favicon.svg
-wrangler.toml  Workers Static Assets config
+src/
+  worker.js    serves assets + the allowlisted /paper/NN.pdf proxy
+wrangler.toml  Worker entry (main) + static assets (ASSETS) config
 ```
