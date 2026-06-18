@@ -1,58 +1,65 @@
-/* The read/write head: tracks the paper nearest the center of the
-   viewport and marks it as the cell currently being "read".
-   Pure progressive enhancement — the page is complete without it. */
+/* The read/write head is fixed at center; the tape slides under it.
+   This marks the frame beneath the head and updates the counter, and
+   maps vertical wheel input onto horizontal travel so a mouse can read
+   the tape. Pure progressive enhancement — native horizontal scroll,
+   touch swipe, and keyboard arrows all work without it. */
 (function () {
   "use strict";
 
-  var head = document.querySelector(".head");
+  var tape = document.getElementById("tape");
+  var frame = document.getElementById("frame");
   var cells = Array.prototype.slice.call(document.querySelectorAll(".cell"));
-  if (!head || !cells.length) return;
+  if (!tape || !cells.length) return;
 
   var current = null;
   var ticking = false;
 
-  function place() {
+  function update() {
     ticking = false;
 
-    var mid = window.innerHeight / 2;
+    var box = tape.getBoundingClientRect();
+    var mid = box.left + tape.clientWidth / 2;   // horizontal center of the tape
     var best = null;
     var bestDist = Infinity;
 
     for (var i = 0; i < cells.length; i++) {
       var rect = cells[i].getBoundingClientRect();
-      var center = rect.top + rect.height / 2;
+      var center = rect.left + rect.width / 2;
       var dist = Math.abs(center - mid);
       if (dist < bestDist) {
         bestDist = dist;
         best = cells[i];
       }
     }
-    if (!best) return;
+    if (!best || best === current) return;
 
-    if (best !== current) {
-      if (current) current.classList.remove("is-read");
-      best.classList.add("is-read");
-      current = best;
-    }
-
-    // position relative to <body> (the head's offset parent)
-    var target = best.offsetTop + best.offsetHeight / 2;
-    head.style.transform = "translateY(" + target + "px) translateY(-50%)";
+    if (current) current.classList.remove("is-read");
+    best.classList.add("is-read");
+    current = best;
+    if (frame) frame.textContent = best.getAttribute("data-frame") || "";
   }
 
   function onScroll() {
     if (!ticking) {
       ticking = true;
-      window.requestAnimationFrame(place);
+      window.requestAnimationFrame(update);
     }
   }
 
-  head.classList.add("head--on");
-  place();
+  // Translate vertical wheel into horizontal travel (leave real
+  // horizontal trackpad gestures to the browser).
+  tape.addEventListener("wheel", function (e) {
+    if (e.deltaY === 0) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    tape.scrollLeft += e.deltaY;
+  }, { passive: false });
 
-  window.addEventListener("scroll", onScroll, { passive: true });
+  tape.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
+
+  update();
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(place); // re-measure once webfonts settle
+    document.fonts.ready.then(update); // re-measure once webfonts settle
   }
 })();

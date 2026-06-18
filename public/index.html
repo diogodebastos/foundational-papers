@@ -22,23 +22,31 @@
 <body>
   <a class="skip" href="#tape">Skip to the papers</a>
 
-  <header class="banner">
-    <div class="banner__inner">
-      <p class="eyebrow" data-print>// LINE&nbsp;PRINTER&nbsp;OUTPUT &nbsp;—&nbsp; FORM&nbsp;FEED&nbsp;0001</p>
-      <h1 class="banner__title" data-print>Foundational<br />Papers</h1>
-      <p class="banner__sub" data-print>in computer science &amp; artificial intelligence</p>
-      <p class="banner__meta" data-print>10&nbsp;frames&nbsp;·&nbsp;1936&nbsp;→&nbsp;2020&nbsp;·&nbsp;read&nbsp;<span aria-hidden="true">↓</span></p>
-    </div>
+  <header class="masthead">
+    <p class="masthead__brand">// FOUNDATIONAL&nbsp;PAPERS</p>
+    <p class="masthead__counter"><span id="frame" aria-live="polite">00</span><span class="masthead__total">&nbsp;/&nbsp;10</span></p>
+    <p class="masthead__hint">scroll&nbsp;<span aria-hidden="true">→</span>&nbsp;to read the tape</p>
   </header>
 
-  <main class="sheet" id="tape">
-    <div class="head" aria-hidden="true"><span class="head__mark">▶</span></div>
+  <div class="head" aria-hidden="true">
+    <span class="head__mark">▼</span>
+    <span class="head__tick"></span>
+  </div>
 
-    <ol class="tape">
+  <main class="tape" id="tape" tabindex="0" aria-label="Foundational papers, horizontal tape — scroll sideways">
+    <div class="track">
 
-      <li class="cell" id="p01">
-        <div class="cell__addr"><span class="cell__num">01</span></div>
-        <div class="cell__body">
+      <section class="panel panel--title">
+        <p class="eyebrow" data-print>// LINE&nbsp;PRINTER&nbsp;OUTPUT &nbsp;—&nbsp; FORM&nbsp;FEED&nbsp;0001</p>
+        <h1 class="title" data-print>Foundational<br />Papers</h1>
+        <p class="title__sub" data-print>in computer science &amp; artificial intelligence</p>
+        <p class="title__meta" data-print>10&nbsp;frames&nbsp;·&nbsp;1936&nbsp;→&nbsp;2020&nbsp;·&nbsp;read&nbsp;<span aria-hidden="true">→</span></p>
+      </section>
+
+      <ol class="papers">
+
+        <li class="cell" id="p01" data-frame="01">
+          <p class="cell__num">01</p>
           <h2 class="cell__title">On Computable Numbers, with an Application to the Entscheidungsproblem</h2>
           <p class="cell__data">Alan Turing · 1936 · Proceedings of the London Mathematical Society</p>
           <p class="cell__note">Defines the abstract machine — tape, states, a head that reads and writes — that every computer is still an instance of.</p>
@@ -46,12 +54,10 @@
             <a href="https://www.cs.ox.ac.uk/activities/ieg/e-library/sources/tp2-ie.pdf">PDF · Oxford</a>
             <a href="https://doi.org/10.1112/plms/s2-42.1.230">DOI · journal</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p02">
-        <div class="cell__addr"><span class="cell__num">02</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p02" data-frame="02">
+          <p class="cell__num">02</p>
           <h2 class="cell__title">A Mathematical Theory of Communication</h2>
           <p class="cell__data">Claude Shannon · 1948 · Bell System Technical Journal</p>
           <p class="cell__note">Turns information into a measurable quantity and names its unit: the bit.</p>
@@ -59,24 +65,20 @@
             <a href="https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf">PDF · Harvard mirror</a>
             <a href="https://ia803209.us.archive.org/27/items/bstj27-3-379/bstj27-3-379_text.pdf">Scan · Internet Archive</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p03">
-        <div class="cell__addr"><span class="cell__num">03</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p03" data-frame="03">
+          <p class="cell__num">03</p>
           <h2 class="cell__title">The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain</h2>
           <p class="cell__data">Frank Rosenblatt · 1958 · Psychological Review</p>
           <p class="cell__note">The first trainable artificial neuron — a machine that learns its weights from examples.</p>
           <nav class="cell__links" aria-label="Sources for The Perceptron">
             <a href="https://www.ling.upenn.edu/courses/cogs501/Rosenblatt1958.pdf">PDF · UPenn</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p04">
-        <div class="cell__addr"><span class="cell__num">04</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p04" data-frame="04">
+          <p class="cell__num">04</p>
           <h2 class="cell__title">Perceptrons</h2>
           <p class="cell__data">Marvin Minsky &amp; Seymour Papert · 1969 · MIT Press</p>
           <p class="cell__note">Proves what a single-layer perceptron cannot learn — XOR among them — cooling the field for a decade. <span class="cell__aside">A book; no official free PDF.</span></p>
@@ -84,12 +86,10 @@
             <a href="https://mitpress.mit.edu/9780262630221/perceptrons/">Publisher · MIT Press</a>
             <a href="https://archive.org/details/perceptronsintro0000mins">Scan · Internet Archive</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p05">
-        <div class="cell__addr"><span class="cell__num">05</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p05" data-frame="05">
+          <p class="cell__num">05</p>
           <h2 class="cell__title">Time, Clocks, and the Ordering of Events in a Distributed System</h2>
           <p class="cell__data">Leslie Lamport · 1978 · Communications of the ACM</p>
           <p class="cell__note">Shows that &ldquo;before&rdquo; in a distributed system is about causal order, not wall-clock time.</p>
@@ -97,12 +97,10 @@
             <a href="https://lamport.azurewebsites.net/pubs/time-clocks.pdf">PDF · author</a>
             <a href="https://dl.acm.org/doi/10.1145/359545.359563">ACM Digital Library</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p06">
-        <div class="cell__addr"><span class="cell__num">06</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p06" data-frame="06">
+          <p class="cell__num">06</p>
           <h2 class="cell__title">Learning Representations by Back-Propagating Errors</h2>
           <p class="cell__data">Rumelhart, Hinton &amp; Williams · 1986 · Nature</p>
           <p class="cell__note">Backpropagation makes multi-layer networks trainable — the answer to the 1969 critique.</p>
@@ -110,12 +108,10 @@
             <a href="https://www.cs.toronto.edu/~hinton/absps/naturebp.pdf">PDF · Toronto</a>
             <a href="https://www.nature.com/articles/323533a0">Nature · official</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p07">
-        <div class="cell__addr"><span class="cell__num">07</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p07" data-frame="07">
+          <p class="cell__num">07</p>
           <h2 class="cell__title">The Anatomy of a Large-Scale Hypertextual Web Search Engine</h2>
           <p class="cell__data">Sergey Brin &amp; Lawrence Page · 1998 · Computer Networks</p>
           <p class="cell__note">PageRank ranks a page by who links to it — the paper that became Google.</p>
@@ -123,12 +119,10 @@
             <a href="http://infolab.stanford.edu/pub/papers/google.pdf">PDF · Stanford InfoLab</a>
             <a href="http://infolab.stanford.edu/~backrub/google.html">HTML version</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p08">
-        <div class="cell__addr"><span class="cell__num">08</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p08" data-frame="08">
+          <p class="cell__num">08</p>
           <h2 class="cell__title">ImageNet Classification with Deep Convolutional Neural Networks</h2>
           <p class="cell__data">Krizhevsky, Sutskever &amp; Hinton · 2012 · NeurIPS</p>
           <p class="cell__note">A deep CNN trained on GPUs crushes ImageNet, igniting the modern deep-learning era.</p>
@@ -136,12 +130,10 @@
             <a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf">PDF · NeurIPS</a>
             <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks">NeurIPS record</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p09">
-        <div class="cell__addr"><span class="cell__num">09</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p09" data-frame="09">
+          <p class="cell__num">09</p>
           <h2 class="cell__title">Attention Is All You Need</h2>
           <p class="cell__data">Vaswani et al. · 2017 · Google Brain / NeurIPS</p>
           <p class="cell__note">Replaces recurrence with attention — the Transformer behind today&rsquo;s language models.</p>
@@ -149,12 +141,10 @@
             <a href="https://arxiv.org/abs/1706.03762">arXiv · abstract</a>
             <a href="https://arxiv.org/pdf/1706.03762">PDF</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-      <li class="cell" id="p10">
-        <div class="cell__addr"><span class="cell__num">10</span></div>
-        <div class="cell__body">
+        <li class="cell" id="p10" data-frame="10">
+          <p class="cell__num">10</p>
           <h2 class="cell__title">Language Models are Few-Shot Learners</h2>
           <p class="cell__data">Brown et al. · 2020 · OpenAI / NeurIPS</p>
           <p class="cell__note">Scaling a Transformer to 175&nbsp;billion parameters lets it learn new tasks from a few examples in the prompt.</p>
@@ -162,16 +152,17 @@
             <a href="https://arxiv.org/abs/2005.14165">arXiv · abstract</a>
             <a href="https://arxiv.org/pdf/2005.14165">PDF</a>
           </nav>
-        </div>
-      </li>
+        </li>
 
-    </ol>
+      </ol>
+
+      <section class="panel panel--end">
+        <p class="colophon__line">END&nbsp;OF&nbsp;TAPE<br />10&nbsp;FRAMES&nbsp;READ</p>
+        <p class="colophon__set">Set in IBM&nbsp;Plex &amp; Space&nbsp;Grotesk · printed on greenbar · served from the edge.</p>
+      </section>
+
+    </div>
   </main>
-
-  <footer class="colophon">
-    <p class="colophon__line">END&nbsp;OF&nbsp;TAPE&nbsp;·&nbsp;10&nbsp;FRAMES&nbsp;READ</p>
-    <p class="colophon__set">Set in IBM&nbsp;Plex &amp; Space&nbsp;Grotesk · printed on greenbar · served from the edge.</p>
-  </footer>
 
   <script src="/main.js" defer></script>
 </body>

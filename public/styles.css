@@ -1,22 +1,24 @@
 /* ============================================================
-   Foundational Papers — "The Tape"
-   A continuous greenbar line-printer sheet on a desk.
-   Signature: tractor-feed sprocket gutters + a read/write head
-   that tracks the paper nearest the center of the viewport.
+   Foundational Papers — "The Tape" (horizontal)
+   The page is a Turing-machine tape running left → right:
+   ten frames in a horizontal greenbar filmstrip with sprocket
+   strips top & bottom, and a read/write head fixed at center
+   that reads whichever frame slides beneath it.
    ============================================================ */
 
 :root {
   --paper: #FAFAF4;   /* the sheet            */
   --bar:   #E3EDE1;   /* alternating greenbar */
-  --desk:  #E6E6DC;   /* surface under sheet  */
+  --desk:  #E6E6DC;   /* punched-hole color   */
   --ink:   #1B1D1A;   /* primary text         */
   --perf:  #C7CEC2;   /* sprockets, hairlines */
   --mute:  #5E6760;   /* secondary text       */
   --link:  #1E4D6B;   /* ink-blue hyperlinks  */
   --head:  #D34E2A;   /* read/write head      */
 
-  --gutter: 48px;     /* tractor-feed margin  */
-  --sheet-max: 940px;
+  --masthead: 56px;   /* top status bar       */
+  --strip: 34px;      /* tractor-feed margin (top & bottom of tape) */
+  --cell-w: min(86vw, 520px);
 
   --display: "Space Grotesk", system-ui, sans-serif;
   --body: "IBM Plex Sans", system-ui, sans-serif;
@@ -25,42 +27,21 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html {
-  background: var(--desk);
-  -webkit-text-size-adjust: 100%;
-}
+html, body { height: 100%; }
 
 body {
-  position: relative;
-  max-width: var(--sheet-max);
-  margin: 0 auto;
-  min-height: 100vh;
-  padding: 0 var(--gutter);
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;                 /* the tape is the only scroller */
   color: var(--ink);
+  background: var(--paper);
   font-family: var(--body);
   line-height: 1.5;
-  background-color: var(--paper);
-  /* tractor-feed sprocket holes punched in both gutters */
-  background-image:
-    radial-gradient(circle, var(--desk) 0 2.7px, var(--perf) 2.7px 3.4px, transparent 3.7px),
-    radial-gradient(circle, var(--desk) 0 2.7px, var(--perf) 2.7px 3.4px, transparent 3.7px);
-  background-size: 16px 27px, 16px 27px;
-  background-position: 16px 22px, calc(100% - 16px) 22px;
-  background-repeat: repeat-y, repeat-y;
-  box-shadow: 0 0 0 1px var(--perf), 0 18px 60px -28px rgba(0,0,0,.45);
-}
-
-@media (max-width: 640px) {
-  :root { --gutter: 30px; }
-  body {
-    background-size: 12px 24px, 12px 24px;
-    background-position: 9px 18px, calc(100% - 9px) 18px;
-  }
 }
 
 /* ---- skip link ---- */
 .skip {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: -60px;
   transform: translateX(-50%);
@@ -69,127 +50,217 @@ body {
   padding: .5rem 1rem;
   font-family: var(--mono);
   font-size: .8rem;
-  z-index: 10;
+  z-index: 20;
   transition: top .15s ease;
 }
 .skip:focus { top: 8px; }
 
 /* ============================================================
-   Banner
+   Masthead — slim status bar
    ============================================================ */
-.banner { padding: clamp(2.4rem, 6vw, 4.5rem) 0 clamp(1.6rem, 4vw, 2.6rem); }
-.banner__inner { max-width: 30ch; }
+.masthead {
+  position: relative;
+  z-index: 6;
+  height: var(--masthead);
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0 clamp(1rem, 4vw, 2.2rem);
+  border-bottom: 1px solid var(--perf);
+  background: var(--paper);
+  font-family: var(--mono);
+}
+.masthead__brand {
+  margin: 0;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  color: var(--ink);
+}
+.masthead__counter {
+  margin: 0;
+  margin-left: auto;
+  font-size: .82rem;
+  letter-spacing: .08em;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+.masthead__counter #frame { color: var(--head); font-weight: 600; }
+.masthead__hint {
+  margin: 0;
+  font-size: .74rem;
+  letter-spacing: .04em;
+  color: var(--mute);
+}
+.masthead__hint span { color: var(--head); }
+@media (max-width: 600px) {
+  .masthead__hint { display: none; }
+  .masthead { gap: .8rem; }
+}
 
+/* ============================================================
+   Read/write head — fixed at horizontal center, points down
+   ============================================================ */
+.head {
+  position: fixed;
+  top: calc(var(--masthead) + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.head__mark {
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--head);
+  filter: drop-shadow(0 1px 4px rgba(211,78,42,.35));
+}
+.head__tick {
+  width: 2px;
+  height: 18px;
+  margin-top: 2px;
+  background: linear-gradient(var(--head), transparent);
+}
+
+/* ============================================================
+   Tape — horizontal scroller
+   ============================================================ */
+.tape {
+  height: calc(100dvh - var(--masthead));
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  /* tractor-feed sprocket holes along top & bottom edges */
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle, var(--desk) 0 2.7px, var(--perf) 2.7px 3.4px, transparent 3.7px),
+    radial-gradient(circle, var(--desk) 0 2.7px, var(--perf) 2.7px 3.4px, transparent 3.7px);
+  background-size: 27px 16px, 27px 16px;
+  background-position: 22px 9px, 22px calc(100% - 9px);
+  background-repeat: repeat-x, repeat-x;
+}
+.tape:focus-visible { outline: 2px solid var(--head); outline-offset: -2px; }
+
+.track {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  padding-block: var(--strip);       /* expose the sprocket strips */
+  width: max-content;
+}
+
+/* keep <ol> semantics without breaking the flex row */
+.papers {
+  display: contents;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- shared panel bones ---- */
+.panel,
+.cell {
+  flex: 0 0 auto;
+  height: 100%;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.4rem, 3.2vw, 2.4rem) clamp(1.5rem, 4vw, 2.8rem);
+  border-right: 1px dashed var(--perf);   /* fanfold fold line */
+  min-height: 0;
+}
+
+/* ============================================================
+   Title panel (first frame)
+   ============================================================ */
+.panel--title {
+  width: min(92vw, 600px);
+  scroll-snap-align: start;
+  gap: .2rem;
+}
 .eyebrow {
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.2rem;
   font-family: var(--mono);
   font-size: .72rem;
   font-weight: 500;
   letter-spacing: .12em;
   color: var(--mute);
 }
-
-.banner__title {
+.title {
   margin: 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(2.9rem, 11vw, 5.6rem);
+  font-size: clamp(2.9rem, 8.5vw, 5.2rem);
   line-height: .92;
   letter-spacing: -.03em;
-  color: var(--ink);
 }
-
-.banner__sub {
-  margin: 1.1rem 0 0;
+.title__sub {
+  margin: 1rem 0 0;
   font-family: var(--display);
   font-weight: 500;
-  font-size: clamp(1rem, 2.4vw, 1.3rem);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
   letter-spacing: -.01em;
-  color: var(--ink);
 }
-
-.banner__meta {
-  margin: 1.4rem 0 0;
+.title__meta {
+  margin: 1.3rem 0 0;
   font-family: var(--mono);
   font-size: .82rem;
   color: var(--mute);
 }
-.banner__meta span { color: var(--head); }
+.title__meta span { color: var(--head); }
 
 /* ============================================================
-   Tape
+   Paper frames
    ============================================================ */
-.sheet { position: static; }
-
-.tape {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px dashed var(--perf);   /* perforation / fold line */
-}
-
 .cell {
-  display: grid;
-  grid-template-columns: 3.4rem 1fr;
-  gap: clamp(.8rem, 3vw, 1.6rem);
-  padding: clamp(1.5rem, 3.6vw, 2.3rem) 0;
-  border-bottom: 1px dashed var(--perf);
+  width: var(--cell-w);
+  gap: 0;
+  overflow-y: auto;                  /* long frames scroll within, if ever needed */
+  position: relative;
+  transition: background .2s ease, box-shadow .2s ease;
 }
-.cell:nth-child(odd) {
-  background: var(--bar);   /* greenbar band; tractor strips stay paper */
-}
+.papers > .cell:nth-child(odd) { background: var(--bar); }  /* greenbar band */
 
-.cell__addr {
-  font-family: var(--mono);
-  text-align: right;
-}
 .cell__num {
-  display: inline-block;
-  font-size: 1.05rem;
+  margin: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 1rem;
   font-weight: 600;
   color: var(--mute);
   font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
   transition: color .2s ease;
 }
-
-.cell__body {
-  padding-left: clamp(.9rem, 2.6vw, 1.5rem);
-  border-left: 2px solid var(--perf);
-  transition: border-color .2s ease;
-}
-
 .cell__title {
-  margin: -.15rem 0 0;
+  margin: 1.1rem 0 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(1.18rem, 2.9vw, 1.7rem);
+  font-size: clamp(1.25rem, 2.6vw, 1.75rem);
   line-height: 1.12;
   letter-spacing: -.018em;
-  color: var(--ink);
   text-wrap: balance;
 }
-
 .cell__data {
-  margin: .7rem 0 0;
+  margin: .8rem 0 0;
   font-family: var(--mono);
-  font-size: .8rem;
+  font-size: .78rem;
   letter-spacing: .01em;
   color: var(--mute);
 }
-
 .cell__note {
-  margin: .75rem 0 0;
-  max-width: 58ch;
+  margin: .85rem 0 auto;
   font-size: 1rem;
-  color: var(--ink);
 }
-.cell__aside {
-  color: var(--mute);
-  font-style: italic;
-}
+.cell__aside { color: var(--mute); font-style: italic; }
 
 .cell__links {
-  margin-top: 1.05rem;
+  margin-top: 1.2rem;
   display: flex;
   flex-wrap: wrap;
   gap: .55rem;
@@ -202,92 +273,73 @@ body {
   padding: .34rem .7rem;
   border: 1px solid var(--perf);
   background: var(--paper);
-  transition: color .15s ease, border-color .15s ease, background .15s ease, transform .15s ease;
+  transition: color .15s ease, border-color .15s ease, transform .15s ease;
 }
-.cell:nth-child(odd) .cell__links a { background: rgba(250,250,244,.6); }
-.cell__links a:hover {
-  color: var(--head);
-  border-color: var(--head);
-  transform: translateY(-1px);
-}
-.cell__links a:focus-visible {
-  outline: 2px solid var(--head);
-  outline-offset: 2px;
-}
+.papers > .cell:nth-child(odd) .cell__links a { background: rgba(250,250,244,.6); }
+.cell__links a:hover { color: var(--head); border-color: var(--head); transform: translateY(-1px); }
+.cell__links a:focus-visible { outline: 2px solid var(--head); outline-offset: 2px; }
 
-/* ---- active cell: the head is reading it ---- */
+/* ---- the frame currently under the head ---- */
+.cell.is-read { box-shadow: inset 0 4px 0 var(--head); }
 .cell.is-read .cell__num { color: var(--head); }
-.cell.is-read .cell__body { border-left-color: var(--head); }
 
 /* ============================================================
-   Read/write head — lives in the left gutter, moved by JS
+   End panel (colophon)
    ============================================================ */
-.head {
-  display: none;            /* shown only when JS positions it */
-  position: absolute;
-  left: 14px;
-  top: 0;
-  width: 20px;
-  text-align: center;
-  z-index: 4;
-  pointer-events: none;
-  will-change: transform;
-  transition: transform .32s cubic-bezier(.4,.8,.3,1);
-}
-.head--on { display: block; }
-.head__mark {
-  display: block;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--head);
-  filter: drop-shadow(0 0 6px rgba(211,78,42,.35));
-}
-@media (max-width: 640px) {
-  .head { left: 6px; width: 14px; }
-  .head__mark { font-size: .8rem; }
-}
-
-/* ============================================================
-   Colophon
-   ============================================================ */
-.colophon {
-  padding: clamp(2rem, 5vw, 3.2rem) 0 clamp(2.6rem, 6vw, 4rem);
-  border-top: 1px dashed var(--perf);
-  text-align: center;
+.panel--end {
+  width: min(78vw, 440px);
+  scroll-snap-align: end;
+  border-right: none;
+  text-align: left;
+  gap: 0;
 }
 .colophon__line {
   margin: 0;
   font-family: var(--mono);
-  font-size: .82rem;
-  letter-spacing: .14em;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .12em;
   color: var(--head);
 }
 .colophon__set {
-  margin: .8rem 0 0;
+  margin: 1.1rem 0 0;
+  max-width: 34ch;
   font-family: var(--mono);
-  font-size: .72rem;
+  font-size: .74rem;
   color: var(--mute);
 }
 
 /* ============================================================
-   Load-in animation ("printing")
-   Only when JS is present and motion is allowed.
+   Scrollbar — a thin track at the foot of the tape
+   ============================================================ */
+.tape::-webkit-scrollbar { height: 10px; }
+.tape::-webkit-scrollbar-track { background: transparent; }
+.tape::-webkit-scrollbar-thumb {
+  background: var(--perf);
+  border: 3px solid var(--paper);
+  border-radius: 6px;
+}
+.tape::-webkit-scrollbar-thumb:hover { background: var(--mute); }
+.tape { scrollbar-color: var(--perf) transparent; }
+
+/* ============================================================
+   Load-in animation ("printing") on the title frame
    ============================================================ */
 .js [data-print] {
   opacity: 0;
   transform: translateY(8px);
   animation: print-in .5s cubic-bezier(.2,.7,.3,1) forwards;
 }
-.js .eyebrow      { animation-delay: .02s; }
-.js .banner__title{ animation-delay: .14s; }
-.js .banner__sub  { animation-delay: .28s; }
-.js .banner__meta { animation-delay: .40s; }
+.js .eyebrow     { animation-delay: .04s; }
+.js .title       { animation-delay: .16s; }
+.js .title__sub  { animation-delay: .30s; }
+.js .title__meta { animation-delay: .42s; }
 
-@keyframes print-in {
-  to { opacity: 1; transform: none; }
-}
+@keyframes print-in { to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
+  .tape { scroll-behavior: auto; }
   .js [data-print] { opacity: 1; transform: none; animation: none; }
-  .head, .cell__links a, .cell__num, .cell__body { transition: none; }
+  .head__mark, .cell, .cell__num, .cell__links a { transition: none; }
 }
