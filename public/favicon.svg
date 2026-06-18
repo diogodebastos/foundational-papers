@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Tape cell">
+  <rect width="32" height="32" rx="4" fill="#FAFAF4"/>
+  <!-- greenbar band -->
+  <rect x="6" y="11" width="20" height="10" fill="#E3EDE1"/>
+  <!-- sprocket perforations -->
+  <g fill="#C7CEC2">
+    <circle cx="4" cy="9" r="1.4"/><circle cx="4" cy="16" r="1.4"/><circle cx="4" cy="23" r="1.4"/>
+    <circle cx="28" cy="9" r="1.4"/><circle cx="28" cy="16" r="1.4"/><circle cx="28" cy="23" r="1.4"/>
+  </g>
+  <!-- read/write head -->
+  <path d="M9 16 l4 -2.6 v5.2 z" fill="#D34E2A"/>
+  <rect x="15" y="15" width="9" height="2" fill="#1B1D1A"/>
+</svg>

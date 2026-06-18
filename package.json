@@ -1,0 +1,13 @@
+{
+  "name": "foundational-papers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A browsable canon of 10 foundational papers in computer science & AI.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
